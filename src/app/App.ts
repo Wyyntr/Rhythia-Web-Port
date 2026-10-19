@@ -400,7 +400,7 @@ export class App {
       const empty = el('div', 'empty');
       empty.textContent = this.busy
         ? 'Reading maps…'
-        : 'No maps yet. Drop an .sspm, .phxm, .rhm or .txt file above to get started.';
+        : 'No maps yet. Drop an .sspm, .phxm, .rhm, .txt or .zip file above to get started.';
       this.mapGrid.append(empty);
       return;
     }
@@ -541,9 +541,9 @@ function shellMarkup(): string {
       </section>
 
       <section class="dropzone" tabindex="0" role="button" aria-label="Import map files">
-        <input class="file-input" type="file" multiple accept=".sspm,.phxm,.rhm,.txt,.mp3,.ogg,.wav,.flac" />
+        <input class="file-input" type="file" multiple accept=".sspm,.phxm,.rhm,.txt,.mp3,.ogg,.wav,.flac,.zip" />
         <p class="drop-title">Drop your maps here</p>
-        <p class="drop-hint">.sspm · .phxm · .rhm · .txt — pair an audio file with .txt maps</p>
+        <p class="drop-hint">.sspm · .phxm · .rhm · .txt · .zip — pair an audio file with .txt maps</p>
         <button class="primary choose-files" type="button">Choose files</button>
       </section>
 

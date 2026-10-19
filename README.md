@@ -13,6 +13,7 @@ client does not support, including phones, tablets, Chromebooks and macOS.
 Playable beta. Currently implemented:
 
 - Map import and parsing for `.sspm` (v1 + v2), `.phxm`, `.rhm` and legacy `.txt` maps
+- ZIP pack import with nested folders and automatic `.txt` + audio pairing
 - A local map library backed by IndexedDB, with covers, best scores and delete/re-import
 - Web Audio driven gameplay: audio clock, latency compensation and hit sounds
 - Faithful hit rules and scoring ported from the current client (55 ms late window, 0.57 hitbox,

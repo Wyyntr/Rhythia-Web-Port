@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test';
-import { buildRhm, buildSspmV2 } from '../tests/builders';
+import { zipSync } from 'fflate';
+import { buildRhm, buildSspmV1, buildSspmV2 } from '../tests/builders';
 
 test('imports an SSPM v2 map into the library', async ({ page }) => {
   await page.goto('/');
@@ -104,4 +105,41 @@ test('reports unsupported or broken files', async ({ page }) => {
   await expect(errors).toBeVisible();
   await expect(errors).toContainText('broken.sspm');
   await expect(errors).toContainText('notes.docx');
+});
+
+test('imports a ZIP pack with folders and paired audio', async ({ page }) => {
+  await page.goto('/');
+
+  const encoder = new TextEncoder();
+  const zip = zipSync({
+    'pack/Zip Song.sspm': buildSspmV2(
+      [
+        { time: 800, x: -1, y: 1 },
+        { time: 1600, x: 0, y: 0 },
+      ],
+      {
+        id: 'zip-sspm',
+        mapName: 'Zip Artist - Zip Song',
+        difficulty: 2,
+        difficultyName: 'Medium',
+      },
+    ),
+    'pack/audio/Legacy In Zip.txt': encoder.encode('v1,1|1|1200'),
+    'pack/audio/Legacy In Zip.mp3': new Uint8Array([0x49, 0x44, 0x33, 0x04, 0x00, 0x00, 0x00]),
+    'pack/__MACOSX/._Legacy In Zip.txt': new Uint8Array([1, 2, 3]),
+  });
+
+  await page.locator('input[type=file]').setInputFiles({
+    name: 'Map Pack.zip',
+    mimeType: 'application/zip',
+    buffer: Buffer.from(zip),
+  });
+
+  await expect(page.locator('.map-card')).toHaveCount(2);
+  await expect(page.getByText('2 maps', { exact: true })).toBeVisible();
+  await expect(page.locator('.map-card', { hasText: 'Zip Song' })).toContainText('Zip Artist');
+
+  const legacy = page.locator('.map-card', { hasText: 'Legacy In Zip' });
+  await expect(legacy).toContainText('TXT');
+  await expect(legacy.getByText('Audio', { exact: true })).toBeVisible();
 });
