@@ -21,8 +21,10 @@ Playable beta. Currently implemented:
 - Mouse and touch aiming (absolute mapping, adjustable finger offset), countdown, pause/resume,
   retry and results screens
 - Scroll speed, approach rate, volume, note offset and touch offset settings
+- Installable PWA with full offline play: the app shell and game are cached after the first visit,
+  so imported maps can be played without a connection
 
-Coming next: PWA/offline support, replays and more visual polish.
+Coming next: replays and more visual polish.
 
 ## Controls
 
@@ -58,6 +60,7 @@ pnpm install
 pnpm dev        # local dev server
 pnpm test       # unit tests (parsers + gameplay rules)
 pnpm test:e2e   # browser tests (uses installed Edge on Windows)
+pnpm test:e2e:pwa  # builds, then verifies install/offline play via vite preview
 pnpm build      # typecheck + production build into dist/
 pnpm preview    # preview the production build
 ```
