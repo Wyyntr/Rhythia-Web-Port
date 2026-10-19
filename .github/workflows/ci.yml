@@ -48,6 +48,10 @@ jobs:
       - name: Configure Pages
         if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
         uses: actions/configure-pages@v5
+        with:
+          # Creates the Pages site on the first run instead of requiring a
+          # manual Settings -> Pages toggle.
+          enablement: true
 
       - name: Upload Pages artifact
         if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
