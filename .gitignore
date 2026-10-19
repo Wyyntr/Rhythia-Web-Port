@@ -1,0 +1,16 @@
+node_modules/
+dist/
+coverage/
+test-results/
+playwright-report/
+
+# Local map files used for manual testing (never committed)
+samples/
+*.sspm
+*.phxm
+*.rhm
+
+# Editor / OS noise
+.vite/
+.DS_Store
+Thumbs.db
