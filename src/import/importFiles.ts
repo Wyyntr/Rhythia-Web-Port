@@ -57,18 +57,18 @@ export async function importFiles(files: File[]): Promise<ImportSummary> {
     if (ext === 'zip') {
       try {
         const archive = unzipSync(new Uint8Array(await file.arrayBuffer()));
-        let count = 0;
+        const entries: LoadedFile[] = [];
         let total = 0;
         for (const [path, bytes] of Object.entries(archive)) {
           const name = archiveEntryName(path);
-          if (!name || name.startsWith('.')) continue;
-          count++;
+          if (!name) continue;
           total += bytes.length;
-          if (count > MAX_ARCHIVE_ENTRIES || total > MAX_ARCHIVE_BYTES) {
+          if (entries.length + 1 > MAX_ARCHIVE_ENTRIES || total > MAX_ARCHIVE_BYTES) {
             throw new Error('the archive contains too many or too-large files');
           }
-          loaded.push({ name, size: bytes.length, bytes });
+          entries.push({ name, size: bytes.length, bytes });
         }
+        loaded.push(...entries);
       } catch (error) {
         errors.push({
           fileName: file.name,

@@ -83,10 +83,11 @@ The repository is set up for GitHub Actions deployment:
 
 1. Push to `main`.
 2. In **Settings → Pages**, set **Source** to **GitHub Actions**.
-3. The workflow runs tests, builds with the base path `/rhythia-web/`, and publishes `dist/`.
+3. The workflow runs tests, builds with the correct base path for the repository (root for
+   `<owner>.github.io`, otherwise `/<repo>/`), and publishes `dist/`.
 
-If you rename the repository or use a custom domain, set `BASE_PATH` accordingly when building
-(`BASE_PATH=/ pnpm build` for a root domain).
+For a custom domain, set `BASE_PATH: /` in the workflow's build step (or build with
+`BASE_PATH=/ pnpm build`).
 
 ## License
 

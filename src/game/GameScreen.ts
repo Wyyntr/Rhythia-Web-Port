@@ -233,8 +233,9 @@ export class GameScreen {
       : options.map.title;
 
     this.displayLengthMs = Math.max(
+      1000,
       options.map.lengthMs,
-      options.map.notes.at(-1)?.time ?? 0,
+      (options.map.notes.at(-1)?.time ?? 0) + 1000,
     );
     this.timeTotal.textContent = formatTime(this.displayLengthMs);
 

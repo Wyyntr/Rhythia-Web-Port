@@ -40,6 +40,10 @@ jobs:
 
       - name: Build
         run: pnpm build
+        env:
+          # Project sites live at /<repo>/, user sites at /. This also makes a
+          # renamed fork deploy correctly without editing the Vite config.
+          BASE_PATH: ${{ endsWith(github.repository, '.github.io') && '/' || format('/{0}/', github.event.repository.name) }}
 
       - name: Configure Pages
         if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'

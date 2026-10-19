@@ -40,6 +40,7 @@ export class App {
   private gameActive = false;
   private dragDepth = 0;
   private statusTimer = 0;
+  private libraryReady = false;
 
   private readonly dropzone: HTMLElement;
   private readonly fileInput: HTMLInputElement;
@@ -48,6 +49,7 @@ export class App {
   private readonly mapGrid: HTMLElement;
   private readonly mapCount: HTMLElement;
   private readonly dialog: HTMLDialogElement;
+  private readonly restorePromise: Promise<void>;
 
   constructor(root: HTMLElement) {
     this.root = root;
@@ -65,7 +67,7 @@ export class App {
     this.bindLibraryEvents();
     this.bindSettingsEvents();
     this.renderLibrary();
-    void this.restoreLibrary();
+    this.restorePromise = this.restoreLibrary();
   }
 
   private query<T extends Element = HTMLElement>(selector: string): T {
@@ -214,6 +216,7 @@ export class App {
         message: 'Saved maps and scores are unavailable in this browser. Imported maps will only last for this session.',
       }];
     } finally {
+      this.libraryReady = true;
       this.renderLibrary();
     }
   }
@@ -228,6 +231,10 @@ export class App {
     this.renderErrors();
 
     try {
+      // The library may still be reading IndexedDB. Let it finish so imports
+      // are never overwritten by the restore snapshot.
+      await this.restorePromise;
+
       const summary = await importFiles(files);
       this.errors = summary.errors;
       this.ignored = summary.ignored;
@@ -400,7 +407,9 @@ export class App {
       const empty = el('div', 'empty');
       empty.textContent = this.busy
         ? 'Reading maps…'
-        : 'No maps yet. Drop an .sspm, .phxm, .rhm, .txt or .zip file above to get started.';
+        : this.libraryReady
+          ? 'No maps yet. Drop an .sspm, .phxm, .rhm, .txt or .zip file above to get started.'
+          : 'Loading your library…';
       this.mapGrid.append(empty);
       return;
     }
