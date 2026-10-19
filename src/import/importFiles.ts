@@ -2,6 +2,7 @@ import { makeBlob } from '../formats/blobs';
 import { parseMapFile } from '../formats';
 import type { MapData } from '../formats/types';
 import { getBaseName, getExtension } from '../formats/util';
+import { makeMapKey } from '../storage/mapKey';
 
 const MAP_EXTENSIONS = new Set(['sspm', 'phxm', 'rhm', 'txt']);
 const AUDIO_EXTENSIONS = new Set(['mp3', 'ogg', 'wav', 'flac']);
@@ -14,6 +15,7 @@ const AUDIO_MIME: Record<string, string> = {
 };
 
 export interface ImportedMap {
+  key: string;
   fileName: string;
   fileSize: number;
   map: MapData;
@@ -57,7 +59,7 @@ export async function importFiles(files: File[]): Promise<ImportSummary> {
   for (const { file, bytes } of loaded) {
     const ext = getExtension(file.name);
     if (!MAP_EXTENSIONS.has(ext)) {
-      ignored.push(file.name);
+      if (!AUDIO_EXTENSIONS.has(ext)) ignored.push(file.name);
       continue;
     }
 
@@ -66,7 +68,8 @@ export async function importFiles(files: File[]): Promise<ImportSummary> {
         ? audioByBaseName.get(getBaseName(file.name).toLowerCase()) ?? null
         : null;
       const map = parseMapFile({ name: file.name, bytes }, { audio });
-      maps.push({ fileName: file.name, fileSize: file.size, map });
+      const key = await makeMapKey(map.format, bytes);
+      maps.push({ key, fileName: file.name, fileSize: file.size, map });
     } catch (error) {
       errors.push({
         fileName: file.name,

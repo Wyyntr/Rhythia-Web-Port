@@ -10,12 +10,30 @@ client does not support, including phones, tablets, Chromebooks and macOS.
 
 ## Status
 
-Early development. Currently implemented:
+Playable beta. Currently implemented:
 
 - Map import and parsing for `.sspm` (v1 + v2), `.phxm`, `.rhm` and legacy `.txt` maps
-- A local map browser for inspecting imported maps (nothing is uploaded anywhere)
+- A local map library backed by IndexedDB, with covers, best scores and delete/re-import
+- Web Audio driven gameplay: audio clock, latency compensation and hit sounds
+- Faithful hit rules and scoring ported from the current client (55 ms late window, 0.57 hitbox,
+  score/combo multipliers, accuracy and health)
+- three.js 3×3 playfield with a perspective note tunnel, hit effects and live HUD
+- Mouse and touch aiming (absolute mapping, adjustable finger offset), countdown, pause/resume,
+  retry and results screens
+- Scroll speed, approach rate, volume, note offset and touch offset settings
 
-Coming next: audio engine, gameplay, touch input, PWA/offline support and replays.
+Coming next: PWA/offline support, replays and more visual polish.
+
+## Controls
+
+- **Aim:** move the mouse or drag a finger. The cursor follows your pointer 1:1; touch input uses an
+  adjustable finger offset so your hand does not cover the target.
+- **Hit notes:** hover over a note's cell as it reaches the grid. Notes can be hit from their timestamp
+  until 55 ms (real time at 1× speed) afterwards.
+- **Pause / resume:** `Esc`, `P` or `Space`, or the pause button. Settings changed while paused apply
+  immediately, except scroll speed and approach rate which apply on retry.
+- **Calibration:** if notes feel early or late, adjust **Note offset** in the settings or pause menu.
+  Positive values make notes arrive later.
 
 ## How it works
 
@@ -24,10 +42,10 @@ Godot 4 + C#, which cannot be exported to the web (Godot does not support C# web
 being reimplemented for the browser with:
 
 - **three.js** for the playfield
-- the **Web Audio API** as the game clock (low-latency audio scheduling)
+- the **Web Audio API** as the game clock (low-latency audio scheduling and output-latency compensation)
 - native parsers for the map formats, written against the public SSPM specification and the formats used
   by the official client
-- **IndexedDB** for local map storage (coming in the next milestone)
+- **IndexedDB** for local map, score and cover storage
 
 Maps are loaded from local files only. Nothing is uploaded, and the app does not redistribute any music.
 
@@ -38,8 +56,8 @@ Requirements: Node.js 22+ and pnpm 11+.
 ```bash
 pnpm install
 pnpm dev        # local dev server
-pnpm test       # unit tests (map parsers)
-pnpm test:e2e   # browser smoke tests (uses installed Edge on Windows)
+pnpm test       # unit tests (parsers + gameplay rules)
+pnpm test:e2e   # browser tests (uses installed Edge on Windows)
 pnpm build      # typecheck + production build into dist/
 pnpm preview    # preview the production build
 ```
